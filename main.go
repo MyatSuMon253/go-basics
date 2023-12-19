@@ -3,18 +3,20 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 )
 
 const portNumber = ":8080"
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "This is the home page")
+	renderTemplate(w, "home.page.tmpl")
 }
 
 func About(w http.ResponseWriter, r *http.Request) {
-	sum := addValues(2, 2)
-	_, _ = fmt.Fprintf(w, fmt.Sprintf("This is the about page and 2 + 2 is: %d", sum))
+	// sum := addValues(2, 2)
+	// _, _ = fmt.Fprintf(w, fmt.Sprintf("This is the about page and 2 + 2 is: %d", sum))
+	renderTemplate(w, "about.page.tmpl")
 }
 
 func addValues(x, y int) int {
@@ -37,6 +39,14 @@ func divideValues(x, y float32) (float32, error) {
 	}
 	result := x / y
 	return result, nil
+}
+
+func renderTemplate(w http.ResponseWriter, tmpl string) {
+	parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
+	err:= parsedTemplate.Execute(w, nil)
+	if err != nil {
+		fmt.Println("Error parsing template: ", err)
+	}
 }
 
 func main() {
